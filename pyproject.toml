@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "tangerine-account"
+version = "0.1.0"
+description = ""
+authors = ["MarcDufresne <marc.andre.dufresne@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+tangerine = "^0.3.9"
+ujson = "^1.35"
+arrow = "^0.12.1"
+oauth2client = "^4.1"
+gspread = "^3.1"
+PyOpenSSL = "^18.0"
+munch = "^2.3"
+click = "^7.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

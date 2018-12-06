@@ -1,0 +1,7 @@
+{
+  "sheet_id": "some-sheet-id",
+  "mapping": {
+    "12345678912": "Sheet 1",
+    "78945612345": "Sheet 2"
+  }
+}
