@@ -23,26 +23,28 @@ gdrive_client = None
 config = None
 
 
-def get_accounts() -> List[Dict]:
+def get_accounts() -> Dict[str, Dict]:
     info("Getting accounts")
     accounts = tangerine_client.list_accounts()
-    mutual_fund_accounts = []
+    mutual_fund_accounts = {}
     for account in accounts:
         if account['type'] != "MUTUAL_FUND":
             continue
-        mutual_fund_accounts.append(tangerine_client.get_account(account['number']))
+        mutual_fund_accounts[account['display_name']] = tangerine_client.get_account(account['number'])
 
     info(f"Found {len(mutual_fund_accounts)} accounts")
     return mutual_fund_accounts
 
 
-def process_data(accounts: List[Dict]):
+def process_data(accounts: Dict[str, Dict]):
     info(f"Getting spreadsheet {config.sheet_id}")
     spreadsheet = gdrive_client.open_by_key(config.sheet_id)
     mapping = config.mapping
 
-    for account in accounts:
-        account_sheet = spreadsheet.worksheet(mapping[account['display_name']])
+    for account_id, sheet_name in mapping.items():
+        account_sheet = spreadsheet.worksheet(sheet_name)
+        account = accounts[account_id]
+
         data = Munch(account['mutual_fund']['holdings'][0])
 
         info(f"Processing account {account['display_name']}")
@@ -53,8 +55,9 @@ def process_data(accounts: List[Dict]):
         market_value = data.market_value
         book_value = data.book_value
         avg_unit_price = book_value / units
+        diff = market_value - book_value
 
-        values = [date, unit_price, units, market_value, book_value, avg_unit_price]
+        values = [date, unit_price, units, market_value, book_value, avg_unit_price, diff]
 
         try:
             found_date = account_sheet.find(date)
